@@ -2,163 +2,34 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GL Bajaj Campus Guide | Clubs & Events Portal</title>
+    <title>GL Bajaj Campus Clubs</title>
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-
-    <!-- Cultural Header Navbar -->
     <div class="navbar">
         <div class="logo">🎪 GL BAJAJ CAMPUS CLUBS</div>
         <div class="nav-links">
-            <a href="#clubs">Clubs</a>
-            <a href="#gallery">Cultural Gallery</a>
-            <a href="#feedback">Contact & Feedback</a>
-            <a href="/core-team-portal?passcode=glbajaj2026" style="color: var(--accent-gold);">🔒 Core Portal</a>
+            <a href="/">Home</a>
+            <a href="/core-team-portal?passcode=GLB-Core2026-Navrang#Sec" style="color: var(--accent-gold);">🔒 Core Portal</a>
         </div>
     </div>
 
-    <!-- Hero Banner -->
     <div class="hero-banner">
-        <h1>✨ Vibrant Campus Life & Clubs Portal ✨</h1>
-        <p>Explore Institutional Cultural Wings, Technical Societies & Event Archives</p>
+        <h1>✨ Select a Club to Explore ✨</h1>
+        <p>Click on any club card below to view its complete details, avenues, and events</p>
     </div>
 
-    <!-- Live Search Bar -->
-    <div class="search-container">
-        <input type="text" id="clubSearch" class="search-input" placeholder="🔍 Search clubs, avenues, or members (e.g. Navrang, Dance, Ananya)..." onkeyup="filterClubs()">
+    <div class="container">
+        <div class="section-grid">
+            {% for club in clubs %}
+            <div class="club-card" style="text-align: center; cursor: pointer;" onclick="window.location.href='/club/{{ club.id }}'">
+                <span class="club-type-tag" style="display: inline-block; margin-bottom: 10px;">{{ club.type }}</span>
+                <h2 style="color: var(--primary-maroon);">{{ club.name }}</h2>
+                <p style="color: #666;">{{ club.department }}</p>
+                <button style="margin-top: 15px; background: var(--primary-maroon); color: var(--accent-gold); border: none; padding: 10px 20px; border-radius: 20px; font-weight: bold; cursor: pointer;">View Club Portal →</button>
+            </div>
+            {% endfor %}
+        </div>
     </div>
-
-    <div class="container" id="clubs">
-        {% if feedback_sent %}
-        <div style="background: #E8F5E9; border: 1px solid #2E7D32; color: #2E7D32; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 25px; font-weight: bold;">
-            🙏 Thank you, {{ sender_name }}! Your feedback/query has been submitted successfully.
-        </div>
-        {% endif %}
-
-        <!-- Clubs List Rendering -->
-        {% for club in clubs %}
-        <div class="club-card">
-            <div class="club-header">
-                <div>
-                    <h2 class="club-title">{{ club.name }}</h2>
-                    <span style="color: var(--secondary-terracotta); font-weight: 600;">{{ club.department }}</span>
-                </div>
-                <span class="club-type-tag">{{ club.type }}</span>
-            </div>
-
-            <div class="section-grid">
-                <!-- Faculty Mentor -->
-                <div class="info-box">
-                    <h4>🏛️ Faculty Coordinator</h4>
-                    <p><strong>{{ club.faculty_coordinator.name }}</strong></p>
-                    <p style="margin: 0; color: #666;">{{ club.faculty_coordinator.role }}</p>
-                </div>
-
-                <!-- Core Leadership -->
-                <div class="info-box">
-                    <h4>👑 Core Team Leadership</h4>
-                    <p><strong>President:</strong> {{ club.core_team.president }}</p>
-                    <p><strong>Vice President:</strong> {{ club.core_team.vice_presidents | join(', ') }}</p>
-                    <p><strong>Secretary:</strong> {{ club.core_team.secretary }}</p>
-                </div>
-
-                <!-- Avenues Count -->
-                <div class="info-box">
-                    <h4>🎨 Active Wings / Avenues</h4>
-                    <p>Total Wings: <strong>{{ club.avenues | length }}</strong></p>
-                    <p style="margin: 0;">Including Dance, Music, Drama, Tech & Management</p>
-                </div>
-            </div>
-
-            <!-- Detailed Avenues List -->
-            <h3 style="color: var(--primary-maroon); margin-top: 25px;">🎭 Club Avenues & Convenors</h3>
-            <div class="section-grid">
-                {% for avenue in club.avenues %}
-                <div class="info-box" style="border-left-color: var(--accent-gold);">
-                    <h4 style="margin-bottom: 8px;">{{ avenue.name }}</h4>
-                    <p style="margin: 4px 0;"><strong>Convenor:</strong> {{ avenue.convenor }}</p>
-                    <p style="margin: 4px 0;"><strong>Co-Convenor:</strong> {{ avenue.co_convenor }}</p>
-                    <p style="margin: 4px 0; font-size: 0.9rem; color: #555;"><strong>Executives:</strong> {{ avenue.executives | join(', ') }}</p>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-        {% endfor %}
-
-        <!-- Dynamic Event Gallery Section -->
-        <div class="gallery-section" id="gallery">
-            <h2 style="color: var(--primary-maroon); text-align: center; margin-top: 0;">🖼️ Dynamic Campus Event Gallery</h2>
-            <p style="text-align: center; color: var(--secondary-terracotta); margin-bottom: 0;">Highlights from Jamming Sessions, Flashmobs, Orientation & Festivals</p>
-            
-            <div class="gallery-grid">
-                {% for club in clubs %}
-                    {% for event in club.past_events %}
-                    <div class="gallery-card">
-                        <img src="{{ event.image }}" alt="{{ event.title }}">
-                        <div class="caption">
-                            {{ event.title }}
-                            <div style="font-size: 0.8rem; font-weight: normal; color: #666; margin-top: 4px;">{{ club.name }}</div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                {% endfor %}
-            </div>
-        </div>
-
-        <!-- Feedback & Inquiry Form -->
-        <div class="feedback-section" id="feedback">
-            <h2>📜 Send Us Your Feedback / Inquiry</h2>
-            <form action="/submit-feedback" method="POST">
-                <div class="form-group">
-                    <label>Full Name</label>
-                    <input type="text" name="name" placeholder="Enter your full name" required>
-                </div>
-                <div class="form-group">
-                    <label>Email Address</label>
-                    <input type="email" name="email" placeholder="student@glbajaj.ac.in" required>
-                </div>
-                <div class="form-group">
-                    <label>Select Concerned Club</label>
-                    <select name="club" required>
-                        <option value="Navrang - Cultural">Navrang - The Cultural Club</option>
-                        <option value="Vibeesta - Music">Vibeesta - Music & Band Society</option>
-                        <option value="Codespace - Tech">Codespace - IT Department Club</option>
-                        <option value="General">General Campus Query</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Your Message / Review</label>
-                    <textarea name="message" rows="4" placeholder="Share your suggestions, performance feedback, or queries..." required></textarea>
-                </div>
-                <button type="submit" class="btn-submit">Submit Form</button>
-            </form>
-        </div>
-
-        <!-- Core Team Portal Access Bar -->
-        <div class="portal-access-bar">
-            <h3 style="margin: 0; color: var(--primary-maroon);">🔒 Are you a Core Team Leader or Convenor?</h3>
-            <p style="margin: 5px 0 15px; color: #555;">Access active member tracker and confidential management reviews.</p>
-            <a href="/core-team-portal?passcode=glbajaj2026">Open Core Team Portal</a>
-        </div>
-
-    </div>
-
-    <script>
-        function filterClubs() {
-            let input = document.getElementById('clubSearch').value.toLowerCase();
-            let clubCards = document.getElementsByClassName('club-card');
-
-            for (let i = 0; i < clubCards.length; i++) {
-                let cardText = clubCards[i].innerText.toLowerCase();
-                if (cardText.includes(input)) {
-                    clubCards[i].style.display = "";
-                } else {
-                    clubCards[i].style.display = "none";
-                }
-            }
-        }
-    </script>
 </body>
 </html>
