@@ -3,132 +3,162 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GL Bajaj Campus Guide - Clubs & Events</title>
+    <title>GL Bajaj Campus Guide | Clubs & Events Portal</title>
     <link rel="stylesheet" href="/static/css/style.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <header class="navbar">
-        <div class="logo">
-            <h2>GL Bajaj AI Campus Navigator</h2>
-        </div>
-        <div class="user-badge">
-            <span id="role-tag"><i class="fa-solid fa-user-graduate"></i> Student View</span>
-        </div>
-    </header>
 
-    <main class="container">
-        <section class="hero-banner">
-            <h1>Campus Clubs & Events Hub</h1>
-            <p>Explore official student organizations, meet core team leaders, and discover upcoming events at GL Bajaj Greater Noida.</p>
-        </section>
-
-        <!-- Club Switcher Buttons -->
-        <div class="club-tabs">
-            {% for club in clubs %}
-            <button class="tab-btn {% if loop.first %}active{% endif %}" onclick="switchClub('{{ club.id }}')">
-                {{ club.name }}
-            </button>
-            {% endfor %}
+    <!-- Cultural Header Navbar -->
+    <div class="navbar">
+        <div class="logo">🎪 GL BAJAJ CAMPUS CLUBS</div>
+        <div class="nav-links">
+            <a href="#clubs">Clubs</a>
+            <a href="#gallery">Cultural Gallery</a>
+            <a href="#feedback">Contact & Feedback</a>
+            <a href="/core-team-portal?passcode=glbajaj2026" style="color: var(--accent-gold);">🔒 Core Portal</a>
         </div>
+    </div>
 
-        <!-- Dynamic Content Sections -->
+    <!-- Hero Banner -->
+    <div class="hero-banner">
+        <h1>✨ Vibrant Campus Life & Clubs Portal ✨</h1>
+        <p>Explore Institutional Cultural Wings, Technical Societies & Event Archives</p>
+    </div>
+
+    <!-- Live Search Bar -->
+    <div class="search-container">
+        <input type="text" id="clubSearch" class="search-input" placeholder="🔍 Search clubs, avenues, or members (e.g. Navrang, Dance, Ananya)..." onkeyup="filterClubs()">
+    </div>
+
+    <div class="container" id="clubs">
+        {% if feedback_sent %}
+        <div style="background: #E8F5E9; border: 1px solid #2E7D32; color: #2E7D32; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 25px; font-weight: bold;">
+            🙏 Thank you, {{ sender_name }}! Your feedback/query has been submitted successfully.
+        </div>
+        {% endif %}
+
+        <!-- Clubs List Rendering -->
         {% for club in clubs %}
-        <div id="club-section-{{ club.id }}" class="club-content {% if loop.first %}active{% endif %}">
-            
-            <!-- Mentor / Faculty Coordinator -->
-            <div class="mentor-card">
-                <img src="{{ club.faculty_coordinator.image }}" alt="{{ club.faculty_coordinator.name }}" class="mentor-img">
-                <div class="mentor-info">
-                    <span class="tag">Meet Our Mentor</span>
-                    <h2>{{ club.faculty_coordinator.name }}</h2>
-                    <p>{{ club.faculty_coordinator.role }}</p>
+        <div class="club-card">
+            <div class="club-header">
+                <div>
+                    <h2 class="club-title">{{ club.name }}</h2>
+                    <span style="color: var(--secondary-terracotta); font-weight: 600;">{{ club.department }}</span>
+                </div>
+                <span class="club-type-tag">{{ club.type }}</span>
+            </div>
+
+            <div class="section-grid">
+                <!-- Faculty Mentor -->
+                <div class="info-box">
+                    <h4>🏛️ Faculty Coordinator</h4>
+                    <p><strong>{{ club.faculty_coordinator.name }}</strong></p>
+                    <p style="margin: 0; color: #666;">{{ club.faculty_coordinator.role }}</p>
+                </div>
+
+                <!-- Core Leadership -->
+                <div class="info-box">
+                    <h4>👑 Core Team Leadership</h4>
+                    <p><strong>President:</strong> {{ club.core_team.president }}</p>
+                    <p><strong>Vice President:</strong> {{ club.core_team.vice_presidents | join(', ') }}</p>
+                    <p><strong>Secretary:</strong> {{ club.core_team.secretary }}</p>
+                </div>
+
+                <!-- Avenues Count -->
+                <div class="info-box">
+                    <h4>🎨 Active Wings / Avenues</h4>
+                    <p>Total Wings: <strong>{{ club.avenues | length }}</strong></p>
+                    <p style="margin: 0;">Including Dance, Music, Drama, Tech & Management</p>
                 </div>
             </div>
 
-            <!-- Core Team -->
-            <div class="section-block">
-                <h3><i class="fa-solid fa-users"></i> Core Leadership Team</h3>
-                {% if club.core_team.banner_image %}
-                <div class="banner-box">
-                    <img src="{{ club.core_team.banner_image }}" alt="Core Team Banner" class="core-banner">
+            <!-- Detailed Avenues List -->
+            <h3 style="color: var(--primary-maroon); margin-top: 25px;">🎭 Club Avenues & Convenors</h3>
+            <div class="section-grid">
+                {% for avenue in club.avenues %}
+                <div class="info-box" style="border-left-color: var(--accent-gold);">
+                    <h4 style="margin-bottom: 8px;">{{ avenue.name }}</h4>
+                    <p style="margin: 4px 0;"><strong>Convenor:</strong> {{ avenue.convenor }}</p>
+                    <p style="margin: 4px 0;"><strong>Co-Convenor:</strong> {{ avenue.co_convenor }}</p>
+                    <p style="margin: 4px 0; font-size: 0.9rem; color: #555;"><strong>Executives:</strong> {{ avenue.executives | join(', ') }}</p>
                 </div>
-                {% endif %}
-                <div class="core-details-grid">
-                    <div class="role-card"><strong>President:</strong> {{ club.core_team.president }}</div>
-                    <div class="role-card"><strong>Vice President(s):</strong> {{ club.core_team.vice_presidents | join(', ') }}</div>
-                    <div class="role-card"><strong>Secretary:</strong> {{ club.core_team.secretary }}</div>
-                    <div class="role-card"><strong>Treasurer:</strong> {{ club.core_team.treasurer }}</div>
-                </div>
+                {% endfor %}
             </div>
-
-            <!-- Avenues Section -->
-            <div class="section-block">
-                <h3><i class="fa-solid fa-layer-group"></i> Club Avenues & Wings</h3>
-                <div class="avenue-grid">
-                    {% for ave in club.avenues %}
-                    <div class="avenue-card">
-                        <h4>{{ ave.name }}</h4>
-                        <p><strong>Convenor:</strong> {{ ave.convenor }}</p>
-                        <p><strong>Co-Convenor:</strong> {{ ave.co_convenor }}</p>
-                        {% if ave.executives %}
-                        <p><strong>Executives:</strong> {{ ave.executives | join(', ') }}</p>
-                        {% endif %}
-                        
-                        {% if ave.members %}
-                        <details class="members-collapse">
-                            <summary>View Team Members ({{ ave.members | length }})</summary>
-                            <ul class="member-list">
-                                {% for m in ave.members %}
-                                <li>{{ m }}</li>
-                                {% endfor %}
-                            </ul>
-                        </details>
-                        {% endif %}
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-
-            <!-- Past Events Section -->
-            <div class="section-block">
-                <h3><i class="fa-solid fa-clock-rotate-left"></i> Past Events Gallery</h3>
-                <div class="events-grid">
-                    {% for pe in club.past_events %}
-                    <div class="event-card">
-                        <img src="{{ pe.image }}" alt="{{ pe.title }}" class="event-img">
-                        <div class="event-body">
-                            <h4>{{ pe.title }}</h4>
-                            <p>{{ pe.description }}</p>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-
-            <!-- Upcoming Events Section -->
-            <div class="section-block">
-                <h3><i class="fa-solid fa-calendar-star"></i> Upcoming Events</h3>
-                <div class="upcoming-grid">
-                    {% for ue in club.upcoming_events %}
-                    <div class="upcoming-card">
-                        <div>
-                            <h4>{{ ue.title }}</h4>
-                            <p><i class="fa-solid fa-calendar"></i> Date: {{ ue.date }}</p>
-                            <p><i class="fa-solid fa-location-dot"></i> Venue: {{ ue.venue }}</p>
-                        </div>
-                        <button class="nav-btn" onclick="navigateVenue('{{ ue.venue }}', {{ ue.coordinates.lat }}, {{ ue.coordinates.lng }})">
-                            <i class="fa-solid fa-route"></i> Navigate on Map
-                        </button>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-
         </div>
         {% endfor %}
-    </main>
 
-    <script src="/static/js/script.js"></script>
+        <!-- Dynamic Event Gallery Section -->
+        <div class="gallery-section" id="gallery">
+            <h2 style="color: var(--primary-maroon); text-align: center; margin-top: 0;">🖼️ Dynamic Campus Event Gallery</h2>
+            <p style="text-align: center; color: var(--secondary-terracotta); margin-bottom: 0;">Highlights from Jamming Sessions, Flashmobs, Orientation & Festivals</p>
+            
+            <div class="gallery-grid">
+                {% for club in clubs %}
+                    {% for event in club.past_events %}
+                    <div class="gallery-card">
+                        <img src="{{ event.image }}" alt="{{ event.title }}">
+                        <div class="caption">
+                            {{ event.title }}
+                            <div style="font-size: 0.8rem; font-weight: normal; color: #666; margin-top: 4px;">{{ club.name }}</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Feedback & Inquiry Form -->
+        <div class="feedback-section" id="feedback">
+            <h2>📜 Send Us Your Feedback / Inquiry</h2>
+            <form action="/submit-feedback" method="POST">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" name="name" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" name="email" placeholder="student@glbajaj.ac.in" required>
+                </div>
+                <div class="form-group">
+                    <label>Select Concerned Club</label>
+                    <select name="club" required>
+                        <option value="Navrang - Cultural">Navrang - The Cultural Club</option>
+                        <option value="Vibeesta - Music">Vibeesta - Music & Band Society</option>
+                        <option value="Codespace - Tech">Codespace - IT Department Club</option>
+                        <option value="General">General Campus Query</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Your Message / Review</label>
+                    <textarea name="message" rows="4" placeholder="Share your suggestions, performance feedback, or queries..." required></textarea>
+                </div>
+                <button type="submit" class="btn-submit">Submit Form</button>
+            </form>
+        </div>
+
+        <!-- Core Team Portal Access Bar -->
+        <div class="portal-access-bar">
+            <h3 style="margin: 0; color: var(--primary-maroon);">🔒 Are you a Core Team Leader or Convenor?</h3>
+            <p style="margin: 5px 0 15px; color: #555;">Access active member tracker and confidential management reviews.</p>
+            <a href="/core-team-portal?passcode=glbajaj2026">Open Core Team Portal</a>
+        </div>
+
+    </div>
+
+    <script>
+        function filterClubs() {
+            let input = document.getElementById('clubSearch').value.toLowerCase();
+            let clubCards = document.getElementsByClassName('club-card');
+
+            for (let i = 0; i < clubCards.length; i++) {
+                let cardText = clubCards[i].innerText.toLowerCase();
+                if (cardText.includes(input)) {
+                    clubCards[i].style.display = "";
+                } else {
+                    clubCards[i].style.display = "none";
+                }
+            }
+        }
+    </script>
 </body>
 </html>
