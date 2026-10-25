@@ -145,7 +145,11 @@ async def submit_feedback(request: Request, name: str = Form(...), email: str = 
 async def core_team_portal(request: Request, passcode: str = ""):
     if passcode != "GLB-2026":
         return templates.TemplateResponse(request, "unauthorized.html", {})
-    return templates.TemplateResponse(request, "core_team.html", {"team_status": TEAM_STATUS_DATA, "reviews": CONVENOR_CONFIDENTIAL_REVIEWS, "feedbacks": FEEDBACK_STORE})
+    return templates.TemplateResponse(request, "core_team.html", {
+        "team_status": TEAM_STATUS_DATA, 
+        "reviews": CONVENOR_CONFIDENTIAL_REVIEWS, 
+        "feedbacks": FEEDBACK_STORE
+    })
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)

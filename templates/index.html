@@ -185,6 +185,17 @@
     </div>
 
     <script>
+        function switchClub(clubId, btnElement) {
+            let panes = document.getElementsByClassName('club-content-pane');
+            for (let i = 0; i < panes.length; i++) { panes[i].classList.remove('active'); }
+
+            let buttons = document.getElementsByClassName('tab-btn');
+            for (let i = 0; i < buttons.length; i++) { buttons[i].classList.remove('active'); }
+
+            document.getElementById(clubId).classList.add('active');
+            btnElement.classList.add('active');
+        }
+
         function openMembersModal(avenueName, membersArray) {
             document.getElementById('modalAvenueName').innerText = avenueName + " Members";
             let listContainer = document.getElementById('modalMembersList');
@@ -211,10 +222,8 @@
 
         window.onclick = function(event) {
             let modal = document.getElementById('membersModal');
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
+            if (event.target == modal) { modal.style.display = "none"; }
         }
     </script>
-    </body>
-    </html>
+</body>
+</html>
