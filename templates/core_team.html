@@ -2,61 +2,75 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Club Details | GL Bajaj</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Core Team Management Portal | GL Bajaj</title>
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
     <div class="navbar">
-        <div class="logo">🎪 GL BAJAJ CAMPUS CLUBS</div>
+        <div class="logo">🔒 GL BAJAJ CORE TEAM PORTAL</div>
         <div class="nav-links">
-            <a href="/">← Back to All Clubs</a>
+            <a href="/">← Back to Home</a>
         </div>
     </div>
 
-    <div class="container" style="margin-top: 40px;">
+    <div class="container" style="margin-top: 30px;">
         <div class="club-card">
-            <div class="club-header">
-                <div>
-                    <h1 class="club-title">{{ club.name }}</h1>
-                    <span style="color: var(--secondary-terracotta); font-weight: 600;">{{ club.department }}</span>
-                </div>
-                <span class="club-type-tag">{{ club.type }}</span>
-            </div>
+            <h1 class="club-title" style="color: var(--primary-maroon);">Management Dashboard</h1>
+            <p style="color: #666;">Confidential management portal for club core leadership and review tracking.</p>
 
-            <div class="section-grid">
-                <div class="info-box">
-                    <h4>🏛️ Faculty Coordinator</h4>
-                    <p><strong>{{ club.faculty_coordinator.name }}</strong></p>
-                    <p style="margin: 0; color: #666;">{{ club.faculty_coordinator.role }}</p>
-                </div>
-                <div class="info-box">
-                    <h4>👑 Core Team Leadership</h4>
-                    <p><strong>President:</strong> {{ club.core_team.president }}</p>
-                    <p><strong>Vice President:</strong> {{ club.core_team.vice_presidents | join(', ') }}</p>
-                    <p><strong>Secretary:</strong> {{ club.core_team.secretary }}</p>
-                </div>
-            </div>
+            <h3 style="color: var(--primary-maroon); margin-top: 30px; border-bottom: 2px solid var(--accent-gold); padding-bottom: 8px;">📋 Team Status & Roles</h3>
+            <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                <thead>
+                    <tr style="background: var(--primary-maroon); color: var(--accent-gold); text-align: left;">
+                        <th style="padding: 10px;">Name</th>
+                        <th style="padding: 10px;">Club</th>
+                        <th style="padding: 10px;">Avenue</th>
+                        <th style="padding: 10px;">Role</th>
+                        <th style="padding: 10px;">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for member in team_status %}
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 10px;"><strong>{{ member.name }}</strong></td>
+                        <td style="padding: 10px;">{{ member.club }}</td>
+                        <td style="padding: 10px;">{{ member.avenue }}</td>
+                        <td style="padding: 10px;">{{ member.role }}</td>
+                        <td style="padding: 10px;">
+                            <span style="padding: 4px 8px; border-radius: 4px; font-size: 0.85rem; {% if member.status == 'Active' %}background: #E8F5E9; color: #2E7D32;{% else %}background: #FFEBEE; color: #C62828;{% endif %}">
+                                {{ member.status }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
 
-            <h3 style="color: var(--primary-maroon); margin-top: 30px;">🎭 Club Avenues & Convenors</h3>
-            <div class="section-grid">
-                {% for avenue in club.avenues %}
-                <div class="info-box" style="border-left-color: var(--accent-gold);">
-                    <h4 style="margin-bottom: 8px;">{{ avenue.name }}</h4>
-                    <p style="margin: 4px 0;"><strong>Convenor:</strong> {{ avenue.convenor }}</p>
-                    <p style="margin: 4px 0;"><strong>Co-Convenor:</strong> {{ avenue.co_convenor }}</p>
-                    <p style="margin: 4px 0; font-size: 0.9rem; color: #555;"><strong>Executives:</strong> {{ avenue.executives | join(', ') }}</p>
+            <h3 style="color: var(--primary-maroon); margin-top: 40px; border-bottom: 2px solid var(--accent-gold); padding-bottom: 8px;">⭐ Convenor Confidential Reviews</h3>
+            <div class="section-grid" style="margin-top: 15px;">
+                {% for rev in reviews %}
+                <div class="info-box" style="border-left: 5px solid var(--accent-gold);">
+                    <h4 style="margin: 0 0 5px 0;">{{ rev.convenor }}</h4>
+                    <p style="margin: 2px 0; color: #666; font-size: 0.9rem;">{{ rev.club }}</p>
+                    <p style="margin: 5px 0;"><strong>Rating:</strong> {{ rev.rating }}</p>
+                    <p style="margin: 5px 0; font-style: italic; color: #444;">"{{ rev.review }}"</p>
                 </div>
                 {% endfor %}
             </div>
 
-            <h3 style="color: var(--primary-maroon); margin-top: 30px;">🖼️ Event Gallery</h3>
-            <div class="gallery-grid">
-                {% for event in club.past_events %}
-                <div class="gallery-card">
-                    <img src="{{ event.image }}" alt="{{ event.title }}">
-                    <div class="caption">{{ event.title }}</div>
-                </div>
-                {% endfor %}
+            <h3 style="color: var(--primary-maroon); margin-top: 40px; border-bottom: 2px solid var(--accent-gold); padding-bottom: 8px;">📬 Student Feedbacks Received</h3>
+            <div style="margin-top: 15px;">
+                {% if feedbacks %}
+                    {% for fb in feedbacks %}
+                    <div style="background: #FFFDF9; border: 1px solid #E0D0B0; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                        <p style="margin: 0 0 5px 0;"><strong>{{ fb.name }}</strong> ({{ fb.email }}) - <span style="color: var(--primary-maroon);">{{ fb.club }}</span></p>
+                        <p style="margin: 0; color: #444;">{{ fb.message }}</p>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p style="color: #666; font-style: italic;">No feedback submissions yet.</p>
+                {% endif %}
             </div>
         </div>
     </div>

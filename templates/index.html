@@ -2,34 +2,219 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>GL Bajaj Campus Clubs</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GL Bajaj Campus Clubs & Events Portal</title>
     <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .club-tabs {
+            display: flex; justify-content: center; gap: 15px; margin: 25px 0; flex-wrap: wrap; padding: 0 15px;
+        }
+        .tab-btn {
+            background: #FFFDF8; border: 2px solid var(--accent-gold); color: var(--primary-maroon);
+            padding: 12px 24px; border-radius: 30px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: all 0.3s ease;
+        }
+        .tab-btn:hover, .tab-btn.active {
+            background: var(--primary-maroon); color: var(--accent-gold); border-color: var(--primary-maroon);
+        }
+        .club-content-pane { display: none; }
+        .club-content-pane.active { display: block; animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Modal styling */
+        .modal {
+            display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center;
+        }
+        .modal-content {
+            background: #FFFDF9; border: 3px solid var(--accent-gold); padding: 25px; border-radius: 15px;
+            width: 90%; max-width: 450px; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .close-btn { position: absolute; right: 15px; top: 10px; font-size: 1.5rem; color: var(--primary-maroon); cursor: pointer; }
+        .btn-members {
+            background: var(--secondary-terracotta); color: #FFF; border: none; padding: 6px 14px;
+            border-radius: 15px; font-size: 0.85rem; font-weight: bold; cursor: pointer; margin-top: 10px;
+        }
+        .event-badge { background: #FFF3D6; border: 1px dashed var(--accent-gold); padding: 12px; border-radius: 8px; margin-bottom: 10px; }
+        
+        /* Feedback Form styling */
+        .feedback-section {
+            background: linear-gradient(135deg, #4A0012, #800020); color: #FFF; padding: 40px 20px; margin-top: 50px; border-top: 4px solid var(--accent-gold);
+        }
+        .feedback-form { max-width: 600px; margin: 20px auto; background: #FFF; padding: 25px; border-radius: 10px; color: #333; }
+        .feedback-form input, .feedback-form select, .feedback-form textarea {
+            width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #CCC; border-radius: 5px; box-sizing: border-box;
+        }
+        .feedback-form button {
+            background: var(--primary-maroon); color: var(--accent-gold); border: none; padding: 12px; width: 100%; font-weight: bold; border-radius: 5px; cursor: pointer; font-size: 1rem;
+        }
+    </style>
 </head>
 <body>
+
     <div class="navbar">
         <div class="logo">🎪 GL BAJAJ CAMPUS CLUBS</div>
         <div class="nav-links">
             <a href="/">Home</a>
-            <a href="/core-team-portal?passcode=GLB-Core2026-Navrang#Sec" style="color: var(--accent-gold);">🔒 Core Portal</a>
+            <a href="/core-team-portal?passcode=GLB-2026" style="color: var(--accent-gold);">🔒 Core Portal</a>
         </div>
     </div>
 
     <div class="hero-banner">
-        <h1>✨ Select a Club to Explore ✨</h1>
-        <p>Click on any club card below to view its complete details, avenues, and events</p>
+        <h1>✨ Explore Official Student Organizations ✨</h1>
+        <p>Meet core team leaders, faculty coordinators, and discover upcoming events</p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="club-tabs">
+        {% for club in clubs %}
+        <button class="tab-btn {% if loop.first %}active{% endif %}" onclick="switchClub('{{ club.id }}', this)">
+            {{ club.name }}
+        </button>
+        {% endfor %}
     </div>
 
     <div class="container">
-        <div class="section-grid">
-            {% for club in clubs %}
-            <div class="club-card" style="text-align: center; cursor: pointer;" onclick="window.location.href='/club/{{ club.id }}'">
-                <span class="club-type-tag" style="display: inline-block; margin-bottom: 10px;">{{ club.type }}</span>
-                <h2 style="color: var(--primary-maroon);">{{ club.name }}</h2>
-                <p style="color: #666;">{{ club.department }}</p>
-                <button style="margin-top: 15px; background: var(--primary-maroon); color: var(--accent-gold); border: none; padding: 10px 20px; border-radius: 20px; font-weight: bold; cursor: pointer;">View Club Portal →</button>
+        {% for club in clubs %}
+        <div id="{{ club.id }}" class="club-content-pane {% if loop.first %}active{% endif %}">
+            <div class="club-card">
+                <div class="club-header">
+                    <div>
+                        <h2 class="club-title">{{ club.name }}</h2>
+                        <span style="color: var(--secondary-terracotta); font-weight: 600;">{{ club.department }}</span>
+                    </div>
+                    <span class="club-type-tag">{{ club.type }}</span>
+                </div>
+
+                <div class="section-grid">
+                    <div class="info-box" style="display: flex; align-items: center; gap: 15px;">
+                        <img src="{{ club.faculty_coordinator.image }}" alt="Mentor" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-gold);" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=60';">
+                        <div>
+                            <h4 style="margin: 0 0 4px 0;">Meet Our Mentor</h4>
+                            <p style="margin: 0; font-weight: bold; color: var(--primary-maroon);">{{ club.faculty_coordinator.name }}</p>
+                            <p style="margin: 2px 0 0 0; font-size: 0.85rem; color: #666;">{{ club.faculty_coordinator.role }}</p>
+                        </div>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>👑 Core Team Leadership</h4>
+                        <p style="margin: 4px 0;"><strong>President:</strong> {{ club.core_team.president }}</p>
+                        <p style="margin: 4px 0;"><strong>Vice President:</strong> {{ club.core_team.vice_presidents | join(', ') }}</p>
+                        <p style="margin: 4px 0;"><strong>Secretary:</strong> {{ club.core_team.secretary }}</p>
+                    </div>
+                </div>
+
+                <!-- Upcoming Events -->
+                <h3 style="color: var(--primary-maroon); margin-top: 30px;">📅 Upcoming Events</h3>
+                <div class="section-grid">
+                    {% for ev in club.upcoming_events %}
+                    <div class="event-badge">
+                        <h4 style="margin: 0 0 5px 0; color: var(--primary-maroon);">{{ ev.title }}</h4>
+                        <p style="margin: 2px 0; font-size: 0.9rem;"><strong>Date:</strong> {{ ev.date }}</p>
+                        <p style="margin: 2px 0; font-size: 0.9rem;"><strong>Venue:</strong> {{ ev.venue }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Avenues with View Members Button -->
+                <h3 style="color: var(--primary-maroon); margin-top: 30px;">🎭 Club Avenues & Convenors</h3>
+                <div class="section-grid">
+                    {% for avenue in club.avenues %}
+                    <div class="info-box" style="border-left-color: var(--accent-gold);">
+                        <h4 style="margin-bottom: 6px;">{{ avenue.name }}</h4>
+                        <p style="margin: 3px 0;"><strong>Convenor:</strong> {{ avenue.convenor }}</p>
+                        <p style="margin: 3px 0;"><strong>Co-Convenor:</strong> {{ avenue.co_convenor }}</p>
+                        <p style="margin: 3px 0; font-size: 0.85rem; color: #555;"><strong>Executives:</strong> {{ avenue.executives | join(', ') }}</p>
+                        
+                        <button class="btn-members" onclick="openMembersModal('{{ avenue.name }}', {{ avenue.members | tojson }})">
+                            👥 View All Members
+                        </button>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Event Gallery -->
+                <h3 style="color: var(--primary-maroon); margin-top: 30px;">🖼️ Event Gallery & Memories</h3>
+                <div class="gallery-grid">
+                    {% for event in club.past_events %}
+                    <div class="gallery-card">
+                        <img src="{{ event.image }}" alt="{{ event.title }}" onerror="this.src='https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=500&auto=format&fit=crop&q=60';">
+                        <div class="caption">
+                            <strong>{{ event.title }}</strong>
+                            <p style="font-size: 0.8rem; color: #666; margin: 4px 0 0; font-weight: normal;">{{ event.description }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
-            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Student Feedback Section -->
+    <div class="feedback-section">
+        <div style="text-align: center;">
+            <h2>📬 Student Feedback & Suggestions</h2>
+            <p>Have suggestions or want to join a club? Send your thoughts directly to the core team.</p>
+            {% if feedback_sent %}
+                <p style="background: #E8F5E9; color: #2E7D32; padding: 10px; display: inline-block; border-radius: 5px; font-weight: bold;">✅ Thank you! Your feedback has been submitted successfully.</p>
+            {% endif %}
+        </div>
+        <form class="feedback-form" action="/submit-feedback" method="POST">
+            <input type="text" name="name" placeholder="Your Full Name" required>
+            <input type="email" name="email" placeholder="Your College Email" required>
+            <select name="club" required>
+                <option value="">Select Interested Club</option>
+                <option value="Navrang">Navrang - The Cultural Club</option>
+                <option value="Vibeesta">Vibeesta - Music & Band</option>
+                <option value="Codespace">Codespace - IT Club</option>
+            </select>
+            <textarea name="message" rows="4" placeholder="Your Message or Query..." required></textarea>
+            <button type="submit">Submit Feedback →</button>
+        </form>
+    </div>
+
+    <!-- Members Modal Popup -->
+    <div id="membersModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeMembersModal()">&times;</span>
+            <h2 id="modalAvenueName" style="color: var(--primary-maroon); margin-top: 0;">Avenue Members</h2>
+            <hr style="border: 1px solid var(--accent-gold);">
+            <ul id="modalMembersList" style="max-height: 250px; overflow-y: auto; padding-left: 20px; color: #444; line-height: 1.6;">
+            </ul>
         </div>
     </div>
-</body>
-</html>
+
+    <script>
+        function openMembersModal(avenueName, membersArray) {
+            document.getElementById('modalAvenueName').innerText = avenueName + " Members";
+            let listContainer = document.getElementById('modalMembersList');
+            listContainer.innerHTML = "";
+
+            if (membersArray && membersArray.length > 0) {
+                membersArray.forEach(member => {
+                    let li = document.createElement('li');
+                    li.innerText = member;
+                    listContainer.appendChild(li);
+                });
+            } else {
+                let li = document.createElement('li');
+                li.innerText = "No members listed yet.";
+                listContainer.appendChild(li);
+            }
+
+            document.getElementById('membersModal').style.display = 'flex';
+        }
+
+        function closeMembersModal() {
+            document.getElementById('membersModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            let modal = document.getElementById('membersModal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+    </body>
+    </html>
